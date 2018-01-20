@@ -1,0 +1,72 @@
+package ${bean.beanUrl};
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+#set($date=0)
+#set($datetime=0)
+#foreach ( $beanProperty in $beanProperties )
+#if($beanProperty.key)
+import javax.persistence.Id;
+#end
+#if($beanProperty.strategy!="")
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+#end
+#if($beanProperty.hasDate)
+#set($date=$date+1)
+#end
+#if($beanProperty.hasDateTime)
+#set($datetime=$datetime+1)
+#end
+#end
+#if($date>0 || $datetime>0)
+import java.util.Date;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+#end
+
+
+/**
+ * ${bean.name} 实体类
+ * @author <a href="mailto:$!{annotation.authorMail}">$!{annotation.authorName}</a>
+ * @date $!{annotation.date}
+ *
+ * @version $!{annotation.version}
+ *
+ */
+@Entity
+@Table(name = "${bean.lowerName}")
+public class ${bean.name} {
+##foreach begin
+##################################################
+#foreach ( $beanProperty in $beanProperties )
+#if($beanProperty.key)
+	@Id
+#end
+#if($beanProperty.strategy!="")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+#end
+#if($beanProperty.hasDate)
+	@Temporal(TemporalType.DATE)
+#end
+#if($beanProperty.hasDateTime)
+	@Temporal(TemporalType.TIMESTAMP)
+#end
+	private $beanProperty.fieldType $beanProperty.fieldName;
+###########
+##foreach end
+#end
+
+##foreach begin
+##################################################
+#foreach ( $beanProperty in $beanProperties )
+	public $beanProperty.fieldType get${beanProperty.methodFieldName}(){
+		return $beanProperty.fieldName;
+	}
+	public void set${beanProperty.methodFieldName}($beanProperty.fieldType $beanProperty.fieldName){
+		this.$beanProperty.fieldName=$beanProperty.fieldName;
+	}
+###########
+##foreach end
+#end
+}
